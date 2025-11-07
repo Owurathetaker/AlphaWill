@@ -1,18 +1,25 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+export const categories = ["Discipline", "Goals", "Faith", "Integrity", "Strength", "Purpose"] as const;
+
+export type Category = typeof categories[number];
+
+export interface Quote {
+  id: string;
+  text: string;
+  author?: string;
+  category: Category;
+  biblicalReference?: string;
+  isFavorite?: boolean;
+}
+
+export const quoteSchema = z.object({
+  id: z.string(),
+  text: z.string().min(10),
+  author: z.string().optional(),
+  category: z.enum(categories),
+  biblicalReference: z.string().optional(),
+  isFavorite: z.boolean().optional(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-});
-
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type QuoteInput = Omit<Quote, 'id'>;
