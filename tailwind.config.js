@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        border: "var(--border)" // only if you use border-border
+        border: "var(--border)"
       }
     },
   },
